@@ -27,6 +27,7 @@ public class NaiveBayesClassifier extends OpinionClassifier {
 	
 	public NaiveBayesClassifier(Map<String, Map<String, Double>> pSet) {
 		this.pSet = new HashMap<String, Map<String, Double>>(pSet.size());
+		this.pMin = new HashMap<String, Double>(pSet.size());
 		for (Entry<String, Map<String, Double>> entry : pSet.entrySet()) {
 			String key = entry.getKey();
 			Map<String, Double> value = entry.getValue();
@@ -68,7 +69,7 @@ public class NaiveBayesClassifier extends OpinionClassifier {
 		return maxClass;
 	}
 	
-	public class Builder {
+	public static class Builder {
 		
 		HashMap<String, File> classToFile;
 		public Builder(String[] clss, String[] filename) {
