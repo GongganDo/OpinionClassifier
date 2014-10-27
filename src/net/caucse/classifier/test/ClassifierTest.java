@@ -9,12 +9,34 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import net.caucse.classifier.NaiveBayesClassifier;
 import net.caucse.paperlibrary.WordDocument;
 import net.caucse.paperlibrary.WordDocumentReader;
+import net.caucse.paperlibrary.WordList;
+import net.caucse.paperlibrary.WordListReader;
 
 public class ClassifierTest {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+		String[] clss = {"ilbe", "todayhumor"};
+		String[] filename = {"result-tf-ilbe", "result-tf-todayhumor"};
+		NaiveBayesClassifier.Builder builder = new NaiveBayesClassifier.Builder(clss, filename);
+		NaiveBayesClassifier nbc = builder.create();
+		
+		WordListReader wlr = new WordListReader("ilbe-words-2014.10.26", Charset.forName("UTF-8"));
+		WordList wl = null;
+		int c = 0;
+		int no = 0;
+		while ( (wl = wlr.read()) != null) {
+			String cl = nbc.classify(wl);
+			System.out.println(++c + " " + cl);
+			if (clss[1].equals(cl)) ++no;
+		}
+		System.err.println(no);
+		wlr.close();
+	}
+	
+	public static void main_old(String[] args) {
 		
 		Tester tester = Tester.getInstance();
 		
