@@ -19,18 +19,18 @@ public class ClassifierTest {
 	
 	public static void main(String[] args) throws Exception {
 		String[] clss = {"ilbe", "todayhumor"};
-		String[] filename = {"result-tf-ilbe", "result-tf-todayhumor"};
+		String[] filename = {"result-tfidf-ilbe", "result-tfidf-todayhumor"};
 		NaiveBayesClassifier.Builder builder = new NaiveBayesClassifier.Builder(clss, filename);
 		NaiveBayesClassifier nbc = builder.create();
 		
-		WordListReader wlr = new WordListReader("ilbe-words-2014.10.26", Charset.forName("UTF-8"));
+		WordListReader wlr = new WordListReader("todayhumor-words-2014.10.26", Charset.forName("UTF-8"));
 		WordList wl = null;
 		int c = 0;
 		int no = 0;
 		while ( (wl = wlr.read()) != null) {
 			String cl = nbc.classify(wl);
 			System.out.println(++c + " " + cl);
-			if (clss[1].equals(cl)) ++no;
+			if (clss[0].equals(cl)) ++no;
 		}
 		System.err.println(no);
 		wlr.close();
