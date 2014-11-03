@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import net.caucse.classifier.NaiveBayesClassifier;
+import net.caucse.classifier.NGramNaiveBayesClassifier;
 import net.caucse.paperlibrary.WordDocument;
 import net.caucse.paperlibrary.WordDocumentReader;
 import net.caucse.paperlibrary.WordList;
@@ -19,20 +19,21 @@ public class ClassifierTest {
 	
 	public static void main(String[] args) throws Exception {
 		String[] clss = {"ilbe", "todayhumor"};
-		String[] filename = {"result-tfidf-ilbe", "result-tfidf-todayhumor"};
-		NaiveBayesClassifier.Builder builder = new NaiveBayesClassifier.Builder(clss, filename);
-		NaiveBayesClassifier nbc = builder.create();
+		String[] filename = {"ilbe-n3-list", "todayhumor-n3-list"};
+		NGramNaiveBayesClassifier.Builder builder = new NGramNaiveBayesClassifier.Builder(clss, filename, 3);
+		NGramNaiveBayesClassifier nbc = builder.create();
 		
-		WordListReader wlr = new WordListReader("todayhumor-words-2014.10.26", Charset.forName("UTF-8"));
+		WordListReader wlr = new WordListReader("ilbe-words-2014.10.26", Charset.forName("UTF-8"));
 		WordList wl = null;
 		int c = 0;
-		int no = 0;
+		int no = 0;int no2 = 0;
 		while ( (wl = wlr.read()) != null) {
 			String cl = nbc.classify(wl);
 			System.out.println(++c + " " + cl);
 			if (clss[0].equals(cl)) ++no;
+			if (clss[1].equals(cl)) ++no2;
 		}
-		System.err.println(no);
+		System.err.println(no + " " + no2);
 		wlr.close();
 	}
 	
