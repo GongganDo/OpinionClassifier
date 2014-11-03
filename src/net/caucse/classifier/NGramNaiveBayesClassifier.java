@@ -79,6 +79,7 @@ public class NGramNaiveBayesClassifier extends OpinionClassifier {
 				maxClass = clss[i];
 			}
 		}
+		if (probability[0] == probability[1]) return "same";
 		return maxClass;
 	}
 	
