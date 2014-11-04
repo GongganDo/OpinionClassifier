@@ -6,11 +6,21 @@ public class SentiWord {
 	enum POS {
 		ADJECTIVE('a'), NOUN('n'), ADVERB('r'), VERB('v');
 		private char pos;
-		POS(char pos) {
+		private POS(char pos) {
 			this.pos = pos;
 		}
 		public char getPos() {
 			return pos;
+		}
+	}
+	
+	public static POS getPos(char pos) {
+		switch (pos){
+			case 'a': return POS.ADJECTIVE;
+			case 'n': return POS.NOUN;
+			case 'r': return POS.ADVERB;
+			case 'v': return POS.VERB;
+			default: return null;
 		}
 	}
 	
@@ -21,8 +31,8 @@ public class SentiWord {
 	private String[] synsetTerms;
 	private String gloss;
 	
-	public SentiWord(POS pos, int id, float posScore, float negScore, String[] synsetTerms, String gloss) {
-		this.pos = pos;
+	public SentiWord(char pos, int id, float posScore, float negScore, String[] synsetTerms, String gloss) {
+		this.pos = getPos(pos);
 		this.id = id;
 		this.posScore = posScore;
 		this.negScore = negScore;
