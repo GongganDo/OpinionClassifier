@@ -3,7 +3,7 @@ package net.caucse.opinion;
 import java.util.Arrays;
 
 public class SentiWord {
-	enum POS {
+	public enum POS {
 		ADJECTIVE('a'), NOUN('n'), ADVERB('r'), VERB('v');
 		private char pos;
 		private POS(char pos) {
