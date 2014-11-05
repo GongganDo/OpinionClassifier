@@ -63,6 +63,9 @@ public class SentiWord {
 	public void setNegScore(float negScore) {
 		this.negScore = negScore;
 	}
+	public float getObjScore() {
+		return 1.f - posScore - negScore;
+	}
 	public String[] getSynsetTerms() {
 		return synsetTerms;
 	}
