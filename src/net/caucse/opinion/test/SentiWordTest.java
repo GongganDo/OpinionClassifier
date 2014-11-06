@@ -2,6 +2,7 @@ package net.caucse.opinion.test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 
 import net.caucse.opinion.SentiWord;
@@ -18,6 +19,8 @@ public class SentiWordTest {
 			SentiWord sentiWord;
 			
 			ScoreMap<String> wordScore = new ScoreMap<String>();
+			
+			PrintStream ps = new PrintStream("ilbe-opinion-2014.789");
 			
 			while ( (sentiWord = swr.read()) != null) {
 				for (String word : sentiWord.getSynsetTerms()) {
@@ -44,6 +47,7 @@ public class SentiWordTest {
 					}
 					
 					double score = sentiWord.getPosScore() - sentiWord.getNegScore();
+					if (score == 0.0) continue;
 					
 					if (wordScore.containsKey(word)) {
 						double prevScore = wordScore.get(word);
@@ -58,7 +62,7 @@ public class SentiWordTest {
 			
 			WordListReader wlr = new WordListReader("ilbe-words-2014.789"); 
 			WordList list;
-			int i = 0;
+			//int i = 0;
 			while ( (list = wlr.read()) != null) {
 				double score = 0.0;
 				for (List<String> line : list) {
@@ -68,8 +72,10 @@ public class SentiWordTest {
 						}
 					}
 				}
-				System.out.println(++i + ": " + score);
+				//System.out.println(++i + ": " + score);
+				ps.println(score);
 			}
+			ps.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
