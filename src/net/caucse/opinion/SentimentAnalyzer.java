@@ -39,11 +39,20 @@ public class SentimentAnalyzer {
 						word = word.substring(0, last-1);
 					} else if (word.charAt(last) == '는') {
 						word = word.substring(0, last);
+					} else if (word.charAt(last) == '운') {
+						// ~운 ==> ~ㅂ다
+						char lastm1 = word.charAt(last-1);
+						word = word.substring(0, last-2);
+						word += (char)(lastm1 + 17);
 					}
 				} else if (sentiWord.getPos() == POS.VERB) {
 					int last = word.length() - 1;
 					if (word.charAt(last-1) == '하' && word.charAt(last) == '다') {
-						word = word.substring(0, last-1);
+						if (word.length() == 3) {
+							word = word.substring(0, last);
+						} else {
+							word = word.substring(0, last-1);
+						}
 					} else if (word.charAt(last) == '다') {
 						word = word.substring(0, last);
 					}
