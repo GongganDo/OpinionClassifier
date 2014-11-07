@@ -35,7 +35,7 @@ public class SentimentAnalyzer {
 					int last = word.length() - 1;
 					if (word.charAt(last) == '의' || word.charAt(last) == '한' && word.charAt(last) == '인') {
 						word = word.substring(0, last);
-					} else if (word.charAt(last-1) == '하' && word.charAt(last) == '는') {
+					} else if (word.length() >= 4 && word.charAt(last-1) == '하' && word.charAt(last) == '는') {
 						word = word.substring(0, last-1);
 					} else if (word.charAt(last) == '는') {
 						word = word.substring(0, last);
