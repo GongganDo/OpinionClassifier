@@ -42,7 +42,7 @@ public class SentimentAnalyzer {
 					} else if (word.charAt(last) == '운') {
 						// ~운 ==> ~ㅂ다
 						char lastm1 = word.charAt(last-1);
-						word = word.substring(0, last-2);
+						word = word.substring(0, last-1);
 						word += (char)(lastm1 + 17);
 					}
 				} else if (sentiWord.getPos() == POS.VERB) {
