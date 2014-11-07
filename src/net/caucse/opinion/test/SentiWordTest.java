@@ -20,12 +20,15 @@ public class SentiWordTest {
 			WordList list;
 			//int i = 0;
 			while ( (list = wlr.read()) != null) {
-				double score = 0.0;
+				//double score = 0.0;
 				for (List<String> line : list) {
-					score += analyzer.analyze(line);
+					//score += analyzer.analyze(line);
+					ps.print(analyzer.analyze(line));
+					ps.print(' ');
 				}
 				//System.out.println(++i + ": " + score);
-				ps.println(score);
+				ps.println();
+				//ps.println(score);
 			}
 			ps.close();
 		} catch (FileNotFoundException e) {
