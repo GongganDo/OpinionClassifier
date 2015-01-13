@@ -4,92 +4,81 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 
-import net.caucse.opinion.SentiWord.POS;
+import net.caucse.paperlibrary.CountMap;
 import net.caucse.paperlibrary.ScoreMap;
 
 public class SentimentAnalyzer {
-	private ScoreMap<String> wordScore;
-	private SentimentAnalyzer(ScoreMap<String> wordScore) {
-		this.wordScore = wordScore;
-	}
+	private ScoreMap<String> positiveWordScore;
+	private ScoreMap<String> negativeWordScore;
 	
-	public static SentimentAnalyzer load(String filename) throws FileNotFoundException, IOException {
+	public SentimentAnalyzer(String filename) throws FileNotFoundException, IOException {
 		SentiWordReader reader = new SentiWordReader(filename);
-		SentimentAnalyzer analyzer = load(reader);
+		load(reader);
 		reader.close();
-		return analyzer;
 	}
 	
-	public static SentimentAnalyzer load(SentiWordReader reader) throws IOException {
+	public SentimentAnalyzer(SentiWordReader reader) throws IOException {
+		load(reader);
+	}
+	
+	private void load(SentiWordReader reader) throws IOException {
 		SentiWord sentiWord;
 		
-		ScoreMap<String> wordScore = new ScoreMap<String>();
+		positiveWordScore = new ScoreMap<String>();
+		negativeWordScore = new ScoreMap<String>();
+		CountMap<String> wordCount = new CountMap<String>();
 		
 		while ( (sentiWord = reader.read()) != null) {
 			for (String word : sentiWord.getSynsetTerms()) {
-				if (word.length() < 2) continue;
-				if (word.charAt(0) == '_') continue;
-				if (!word.matches(".*[가-힣].*")) continue;
 				
-				if (sentiWord.getPos() == POS.ADJECTIVE) {
-					int last = word.length() - 1;
-					if (word.charAt(last) == '의' || word.charAt(last) == '한' && word.charAt(last) == '인') {
-						word = word.substring(0, last);
-					} else if (word.length() >= 4 && word.charAt(last-1) == '하' && word.charAt(last) == '는') {
-						word = word.substring(0, last-1);
-					} else if (word.charAt(last) == '는') {
-						word = word.substring(0, last);
-					} else if (word.charAt(last) == '운') {
-						// ~운 ==> ~ㅂ다
-						char lastm1 = word.charAt(last-1);
-						word = word.substring(0, last-1);
-						word += (char)(lastm1 + 17);
-					}
-				} else if (sentiWord.getPos() == POS.VERB) {
-					int last = word.length() - 1;
-					if (word.charAt(last-1) == '하' && word.charAt(last) == '다') {
-						if (word.length() == 3) {
-							word = word.substring(0, last);
-						} else {
-							word = word.substring(0, last-1);
-						}
-					} else if (word.charAt(last) == '다') {
-						word = word.substring(0, last);
-					}
-				}
+				word = preProcess(word, sentiWord);
+				if (word == null) continue;
 				
-				double score = sentiWord.getPosScore() - sentiWord.getNegScore();
-				if (score == 0.0) continue;
-				
-				if (wordScore.containsKey(word)) {
-					double prevScore = wordScore.get(word);
-					wordScore.put(word, (score + prevScore) / 2.0);
-				} else {
-					wordScore.put(word, score);
-				}
+				wordCount.add(word);
+				positiveWordScore.add(word, sentiWord.getPosScore());
+				negativeWordScore.add(word, sentiWord.getNegScore());
 			}
 		}
 		
-		return new SentimentAnalyzer(wordScore);
+		for (String word : wordCount.keySet()) {
+			int count = wordCount.get(word);
+			double posScore = positiveWordScore.get(word);
+			double negScore = negativeWordScore.get(word);
+			positiveWordScore.put(word, posScore / count);
+			negativeWordScore.put(word, negScore / count);
+		}
 	}
 	
-	public double analyze(String[] words) {
-		double score = 0.0;
-		for (String word : words) {
-			if (wordScore.containsKey(word)) {
-				score += wordScore.get(word);
-			}
-		}
-		return score;
+	/**
+	 * SentiWordNet 데이터를 불러올 때 전처리가 필요한 부분 정의
+	 * @param word 불러온 단어
+	 * @param sentiWord 불러온 단어의 SentiWordNet 정보
+	 * @return 전처리를 수행한 후의 단어, 불용어인 경우 null을 반환
+	 */
+	protected String preProcess(String word, SentiWord sentiWord) {
+		word = word.replace('_', ' ');
+		return word;
 	}
 	
-	public double analyze(Collection<? extends String> words) {
-		double score = 0.0;
+	public SentimentResult analyze(String[] words) {
+		double posScore = 0.0, negScore = 0.0;
 		for (String word : words) {
-			if (wordScore.containsKey(word)) {
-				score += wordScore.get(word);
+			if (positiveWordScore.containsKey(word)) {
+				posScore += positiveWordScore.get(word);
+				negScore += negativeWordScore.get(word);
 			}
 		}
-		return score;
+		return new SentimentResult(posScore / words.length, negScore / words.length);
+	}
+	
+	public SentimentResult analyze(Collection<? extends String> words) {
+		double posScore = 0.0, negScore = 0.0;
+		for (String word : words) {
+			if (positiveWordScore.containsKey(word)) {
+				posScore += positiveWordScore.get(word);
+				negScore += negativeWordScore.get(word);
+			}
+		}
+		return new SentimentResult(posScore / words.size(), negScore / words.size());
 	}
 }
