@@ -21,7 +21,8 @@ public class SentiWordReader {
 		while (true) {
 			line = br.readLine();
 			if (line == null) return null;
-			if (line.charAt(0) != '#') break;
+			line = line.trim();
+			if (line.length() > 0 && line.charAt(0) != '#') break;
 		}
 		String[] data = line.split("\t");
 		String[] terms = data[4].split(" ");
